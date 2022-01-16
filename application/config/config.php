@@ -59,3 +59,15 @@ define('DB_NAME', 'mini');
 define('DB_USER', 'root');
 define('DB_PASS', '12345678');
 define('DB_CHARSET', 'utf8mb4');
+
+define('FETCH_MODE', PDO::FETCH_ASSOC);
+define('ERRMODE', PDO::ERRMODE_EXCEPTION);
+/*
+define('DB_TYPE', 'sqlite');
+define('DB_PATH', '');
+*/
+
+/**
+ * Default controller
+ */
+define('DEFAULT_CONTROLLER', 'Home');

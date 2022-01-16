@@ -32,8 +32,18 @@ class Model
         // "objects", which means all results will be objects, like this: $result->user_name !
         // For example, fetch mode FETCH_ASSOC would return results like this: $result["user_name] !
         // @see http://www.php.net/manual/en/pdostatement.fetch.php
-        $options = array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ, PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING);
-        
+        $options = array();
+        $options[PDO::ATTR_DEFAULT_FETCH_MODE] = defined('FETCH_MODE') ? FETCH_MODE : PDO::FETCH_OBJ;
+        $options[PDO::ATTR_ERRMODE] = defined('ERRMODE') ? ERRMODE : PDO::ERRMODE_WARNING;
+
+        if (DB_TYPE == "sqlite") {
+            $this->db = new PDO(DB_TYPE . ':' . DB_PATH, null, null, $options);
+            return;
+        } else if(DB_TYPE == "none") {
+            $this->db = null;
+            return;
+        }
+
         // setting the encoding is different when using PostgreSQL
         if (DB_TYPE == "pgsql") {
             $databaseEncodingenc = " options='--client_encoding=" . DB_CHARSET . "'";

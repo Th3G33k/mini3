@@ -2,7 +2,7 @@
 /** For more info about namespaces plase @see http://php.net/manual/en/language.namespaces.importing.php */
 namespace Mini\Core;
 
-require APP . 'core/CoreFunctions.php';
+require APP . 'Core/CoreFunctions.php';
 
 class Application
 {
@@ -27,7 +27,8 @@ class Application
         // check for controller: no controller given ? then load start-page
         if (!$this->url_controller) {
 
-            $page = new \Mini\Controller\HomeController();
+            $controller = "\\Mini\\Controller\\" . ucfirst(DEFAULT_CONTROLLER) . "Controller";
+            $page = new $controller();
             $page->index();
 
         } elseif (file_exists(APP . 'Controller/' . ucfirst($this->url_controller) . 'Controller.php')) {
@@ -54,9 +55,14 @@ class Application
                 if (strlen($this->url_action) == 0) {
                     // no action defined: call the default index() method of a selected controller
                     $this->url_controller->index();
-                } else {
-                    $page = new \Mini\Controller\ErrorController();
-                    $page->index();
+                }
+                elseif ( (new ReflectionMethod($this->url_controller, "index"))->getNumberOfParameters() > 0 ){
+                    // if index() method have an argument, pass action as argument
+                    array_unshift($this->url_params, $this->url_action);
+                    call_user_func_array(array($this->url_controller, "index"), $this->url_params);
+                }
+                else {
+                    header('location: ' . URL . 'problem');
                 }
             }
         } else {
